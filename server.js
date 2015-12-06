@@ -102,10 +102,10 @@ app.put('/restaurant_id/:id/grade', function(req,res) {
 			if (err) {
 				res.status(500).json(err);
 				throw err
-			}
+			}hi 
        		//console.log('Restaurant created!')
        		db.close();
-			res.status(200).json({message: 'update done', id: r1._id});
+			res.status(200).json({message: 'hi update done', id: r1._id});
 		});
 	});
 });
