@@ -91,24 +91,25 @@ app.put('/restaurant_id/:id/grade', function(req,res) {
 	var db = mongoose.connection;
 	db.on('error', console.error.bind(console, 'connection error:'));
 	db.once('open', function (callback) {
-		var rObj1 = {};
-		rObj1.grades = {};
-		rObj1.grades.date = req.body.date;
-		rObj1.grades.grade = req.body.grade;
-		rObj1.grades.score = req.body.score;
+		var rObj = {};
+		rObj.grades = {};
+		rObj.grades.date = req.body.date;
+		rObj.grades.grade = req.body.grade;
+		rObj.grades.score = req.body.score;
 		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
-		var r1 = new Restaurant(rObj1);
-		r1.update({id:req.params.id},{$push:rObj1},function(err){
+		
+		Restaurant.update({restaurant_id: req.params.id},{$push:rObj},function(err){
 			if (err) {
 				res.status(500).json(err);
 				throw err
-			}hi 
-       		//console.log('Restaurant created!')
+			}
        		db.close();
-			res.status(200).json({message: 'hi update done', id: r1._id});
+			res.status(200).json({message: 'update done'});
 		});
 	});
 });
+
+
 
 app.listen(process.env.PORT || 8099);
 
