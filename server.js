@@ -85,25 +85,29 @@ app.get('/restaurant_id/:id', function(req,res) {
     });
 });
 
-app.put('/restaurant_id/:id/:attrib/:attrib_value', function(req,res) {
-	var criteria = {};
-	criteria[req.params.attrib] = req.params.attrib_value;
+app.put('/restaurant_id/:id/grade', function(req,res) {
+	var restaurantSchema = require('./models/restaurant');
 
-	console.log(criteria);
-	
-	mongoose.connect(mongodbURL);
+	mongoose.connect(MONGODBURL);
 	var db = mongoose.connection;
 	db.on('error', console.error.bind(console, 'connection error:'));
 	db.once('open', function (callback) {
+		var rObj1 = {};
+		
+		rObj1.grades={};
+		rObj1.grades.date = req.body.date;
+		rObj1.grades.grade = req.body.grade;
+		rObj1.grades.score = req.body.score;
+		
 		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
-		Restaurant.update({restaurant_id: req.params.id},{$set:criteria},function(err){
+		Restaurant.update({id:req.params.id},{$push:rObj1},function(err){
 			if (err) {
-				res.status(500).json(err);
-				throw err
+				console.log("Error: " + err.message);
+				res.write(err.message);
 			}
-				res.status(200).json(results);
+			else {
 				db.close();
-				
+				res.end('Done',200);
 			}
 		});
 	});
