@@ -109,7 +109,104 @@ app.put('/restaurant_id/:id/grade', function(req,res) {
 	});
 });
 
+/*update address by id fail
+app.put('/restaurant_id/:id/address', function(req,res) {
+	var restaurantSchema = require('./models/restaurant');
+	mongoose.connect(mongodbURL);
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function (callback) {
+		var rObj = {};
+		rObj.grades = {};
+		rObj.grades.date = req.body.date;
+		rObj.grades.grade = req.body.grade;
+		rObj.grades.score = req.body.score;
+		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+		
+		Restaurant.update({restaurant_id: req.params.id},{$push:rObj},function(err){
+			if (err) {
+				res.status(500).json(err);
+				throw err
+			}
+       		db.close();
+			res.status(200).json({message: 'update done'});
+		});
+	});
+});
+*/
+//delete by name
+app.delete('/name/:name',function(req,res) {
+	var restaurantSchema = require('./models/restaurant');
+	mongoose.connect(mongodbURL);
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function (callback) {
+		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+		Restaurant.find({name: req.params.name}).remove(function(err) {
+       		if (err) {
+				res.status(500).json(err);
+				throw err
+			}
+       		//console.log('Restaurant removed!')
+       		db.close();
+			res.status(200).json({message: 'delete done', restaurant_id: req.params.id});
+    	});
+    });
+});
 
+//get by address attrib 
+app.get('/address/:attrib/:attrib_value', function(req,res) {
+	var restaurantSchema = require('./models/restaurant');
+	var criteria = {};
+	criteria["address."+req.params.attrib] = req.params.attrib_value;
+
+	mongoose.connect(mongodbURL);
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function (callback) {
+		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+		Restaurant.find(criteria,function(err,results){
+       		if (err) {
+				res.status(500).json(err);
+				throw err
+			}
+			if (results.length > 0) {
+				res.status(200).json(results);
+			}
+			else {
+				res.status(200).json({message: 'No matching document'});
+			}
+			db.close();
+		});
+	});
+});
+
+//get by attrib
+app.get('/:attrib/:attrib_value', function(req,res) {
+	var restaurantSchema = require('./models/restaurant');
+	var criteria = {};
+	criteria[req.params.attrib] = req.params.attrib_value;
+
+	mongoose.connect(mongodbURL);
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function (callback) {
+		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+		Restaurant.find(criteria,function(err,results){
+       		if (err) {
+				res.status(500).json(err);
+				throw err
+			}
+			if (results.length > 0) {
+				res.status(200).json(results);
+			}
+			else {
+				res.status(200).json({message: 'No matching document'});
+			}
+			db.close();
+		});
+	});
+});
 
 app.listen(process.env.PORT || 8099);
 
