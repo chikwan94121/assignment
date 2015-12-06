@@ -109,21 +109,20 @@ app.put('/restaurant_id/:id/grade', function(req,res) {
 	});
 });
 
-/*update address by id fail
-app.put('/restaurant_id/:id/address', function(req,res) {
+//update by id fail
+app.put('/restaurant_id/:id/:attrib/:attrib_value', function(req,res) {
 	var restaurantSchema = require('./models/restaurant');
+	var criteria = {};
+	criteria[req.params.attrib] = req.params.attrib_value;
+	console.log(criteria);
 	mongoose.connect(mongodbURL);
 	var db = mongoose.connection;
 	db.on('error', console.error.bind(console, 'connection error:'));
 	db.once('open', function (callback) {
-		var rObj = {};
-		rObj.grades = {};
-		rObj.grades.date = req.body.date;
-		rObj.grades.grade = req.body.grade;
-		rObj.grades.score = req.body.score;
+		
 		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
 		
-		Restaurant.update({restaurant_id: req.params.id},{$push:rObj},function(err){
+		Restaurant.update({restaurant_id: req.params.id},{$set:criteria},function(err){
 			if (err) {
 				res.status(500).json(err);
 				throw err
@@ -133,7 +132,54 @@ app.put('/restaurant_id/:id/address', function(req,res) {
 		});
 	});
 });
-*/
+//update address by id fail
+app.put('/restaurant_id/:id/address/:attrib/:attrib_value', function(req,res) {
+	var restaurantSchema = require('./models/restaurant');
+	var criteria = {};
+	criteria["address."+req.params.attrib] = req.params.attrib_value;
+	console.log(criteria);
+	mongoose.connect(mongodbURL);
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function (callback) {
+		
+		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+		
+		Restaurant.update({restaurant_id: req.params.id},{$set:criteria},function(err){
+			if (err) {
+				res.status(500).json(err);
+				throw err
+			}
+       		db.close();
+			res.status(200).json({message: 'update done'});
+		});
+	});
+});
+
+//update grades by id fail
+app.put('/restaurant_id/:id/grades/:attrib/:attrib_value', function(req,res) {
+	var restaurantSchema = require('./models/restaurant');
+	var criteria = {};
+	criteria["grades."+req.params.attrib] = req.params.attrib_value;
+	console.log(criteria);
+	mongoose.connect(mongodbURL);
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function (callback) {
+		
+		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+		
+		Restaurant.update({restaurant_id: req.params.id},{$push:criteria},function(err){
+			if (err) {
+				res.status(500).json(err);
+				throw err
+			}
+       		db.close();
+			res.status(200).json({message: 'update done'});
+		});
+	});
+});
+
 //delete by name
 app.delete('/name/:name',function(req,res) {
 	var restaurantSchema = require('./models/restaurant');
