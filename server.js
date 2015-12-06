@@ -108,8 +108,29 @@ app.put('/restaurant_id/:id/grade', function(req,res) {
 		});
 	});
 });
+//delete by attribe
+app.delete('/:attrib/:attrib_value',function(req,res) {
+	var restaurantSchema = require('./models/restaurant');
+	var criteria = {};
+	criteria[req.params.attrib] = req.params.attrib_value;
+	mongoose.connect(mongodbURL);
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function (callback) {
+		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+		Restaurant.find(criteria).remove(function(err) {
+       		if (err) {
+				res.status(500).json(err);
+				throw err
+			}
+       		//console.log('Restaurant removed!')
+       		db.close();
+			res.status(200).json({message: 'delete done'});
+    	});
+    });
+});
 
-//update by id fail
+//update by id 
 app.put('/restaurant_id/:id/:attrib/:attrib_value', function(req,res) {
 	var restaurantSchema = require('./models/restaurant');
 	var criteria = {};
@@ -132,7 +153,7 @@ app.put('/restaurant_id/:id/:attrib/:attrib_value', function(req,res) {
 		});
 	});
 });
-//update address by id fail
+//update address by id 
 app.put('/restaurant_id/:id/address/:attrib/:attrib_value', function(req,res) {
 	var restaurantSchema = require('./models/restaurant');
 	var criteria = {};
@@ -156,7 +177,7 @@ app.put('/restaurant_id/:id/address/:attrib/:attrib_value', function(req,res) {
 	});
 });
 
-//update grades by id fail
+/*update grades by id fail
 app.put('/restaurant_id/:id/grades/:attrib/:attrib_value', function(req,res) {
 	var restaurantSchema = require('./models/restaurant');
 	var criteria = {};
@@ -179,6 +200,7 @@ app.put('/restaurant_id/:id/grades/:attrib/:attrib_value', function(req,res) {
 		});
 	});
 });
+*/
 
 //delete by name
 app.delete('/name/:name',function(req,res) {
@@ -199,6 +221,45 @@ app.delete('/name/:name',function(req,res) {
     	});
     });
 });
+//delete by borough
+app.delete('/borough/:borough',function(req,res) {
+	var restaurantSchema = require('./models/restaurant');
+	mongoose.connect(mongodbURL);
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function (callback) {
+		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+		Restaurant.find({borough: req.params.borough}).remove(function(err) {
+       		if (err) {
+				res.status(500).json(err);
+				throw err
+			}
+       		//console.log('Restaurant removed!')
+       		db.close();
+			res.status(200).json({message: 'delete done'});
+    	});
+    });
+});
+//delete by cuisine
+app.delete('/cuisine/:cuisine',function(req,res) {
+	var restaurantSchema = require('./models/restaurant');
+	mongoose.connect(mongodbURL);
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function (callback) {
+		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+		Restaurant.find({cuisine: req.params.cuisine}).remove(function(err) {
+       		if (err) {
+				res.status(500).json(err);
+				throw err
+			}
+       		//console.log('Restaurant removed!')
+       		db.close();
+			res.status(200).json({message: 'delete done'});
+    	});
+    });
+});
+
 
 //get by address attrib 
 app.get('/address/:attrib/:attrib_value', function(req,res) {
