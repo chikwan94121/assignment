@@ -260,9 +260,10 @@ app.delete('/grades/date/:date/grade/:grade/score/:score',function(req,res) {
 				res.status(500).json(err);
 				throw err
 			}
-       		//console.log('Restaurant removed!')
-       		db.close();
-			res.status(200).json({message: 'delete done'});
+		}else{
+				res.status(200).json({message: 'delete done'});
+		}
+			db.close();
     	});
     });
 });
