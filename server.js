@@ -61,7 +61,7 @@ app.delete('/restaurant_id/:id',function(req,res) {
     	});
     });
 });
-app.delete('/grades/date/:date/grade/:grade/score/:score',function(req,res) {
+app.delete('restaurant_id/:id/grades/date/:date/grade/:grade/score/:score',function(req,res) {
 	var restaurantSchema = require('./models/restaurant');
 	mongoose.connect(mongodbURL);
 	var db = mongoose.connection;
