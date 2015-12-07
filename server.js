@@ -248,30 +248,24 @@ app.delete('/borough/:borough',function(req,res) {
 });
 //delete by cuisine
 
-app.delete('/grades', function(req,res) {
+app.delete('/grades/date/:date/grade/:grade/score/:score',function(req,res) {
 	var restaurantSchema = require('./models/restaurant');
 	mongoose.connect(mongodbURL);
 	var db = mongoose.connection;
 	db.on('error', console.error.bind(console, 'connection error:'));
 	db.once('open', function (callback) {
-		var rObj = {};
-		rObj.grades = {};
-		rObj.grades.date = req.body.date;
-		rObj.grades.grade = req.body.grade;
-		rObj.grades.score = req.body.score;
 		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
-		
-		Restaurant.find(rObj).remove(function(err) {
-			if (err) {
+		Restaurant.update({restaurant_id: req.params.id},{$pull:{grades:{date:req.params.date,grade:req.params.grade,score:req.params.score}}},{ safe: true },function(err){
+       		if (err) {
 				res.status(500).json(err);
 				throw err
 			}
+       		//console.log('Restaurant removed!')
        		db.close();
-			res.status(200).json({message: 'update done'});
-		});
-	});
+			res.status(200).json({message: 'delete done'});
+    	});
+    });
 });
-
 
 //get by address attrib 
 app.get('/address/:attrib/:attrib_value', function(req,res) {
