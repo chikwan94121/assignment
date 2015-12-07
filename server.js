@@ -43,6 +43,45 @@ app.post('/',function(req,res) {
     });
 });
 
+app.post('/',function(req,res) {
+	//console.log(req.body);
+	var restaurantSchema = require('./models/restaurant');
+	mongoose.connect(mongodbURL);
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function (callback) {
+		var rObj = {};
+		if(req.body.building != undefined||req.body.street != undefined||req.body.zipcode != undefined){
+		rObj.address = {};
+		if(req.body.building != undefined) rObj.address.building = req.body.building;
+		if(req.body.street != undefined) rObj.address.street = req.body.street;
+		if(req.body.zipcode != undefined) rObj.address.zipcode = req.body.zipcode;
+		}
+		if(req.body.lon != undefined||req.body.lat != undefined){
+		rObj.address.coord = [];
+		rObj.address.coord.push(req.body.lon);
+		rObj.address.coord.push(req.body.lat);
+		}
+		if(req.body.borough != undefined) rObj.borough = req.body.borough;
+		if(req.body.cuisine != undefined) rObj.cuisine = req.body.cuisine;
+		if(req.body.name != undefined) rObj.name = req.body.name;
+		if(req.body.restaurant_id != undefined) rObj.restaurant_id = req.body.restaurant_id;
+
+		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+		var r = new Restaurant(rObj);
+		//console.log(r);
+		r.save(function(err) {
+       		if (err) {
+				res.status(500).json(err);
+				throw err
+			}
+       		//console.log('Restaurant created!')
+       		db.close();
+			res.status(200).json({message: 'insert done', _id: r._id});
+    	});
+    });
+});
+
 app.delete('/restaurant_id/:id',function(req,res) {
 	var restaurantSchema = require('./models/restaurant');
 	mongoose.connect(mongodbURL);
