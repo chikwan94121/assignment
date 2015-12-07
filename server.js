@@ -61,6 +61,37 @@ app.delete('/restaurant_id/:id',function(req,res) {
     	});
     });
 });
+app.delete('/grades/date/:date/grade/:grade/score/:score',function(req,res) {
+	var restaurantSchema = require('./models/restaurant');
+	mongoose.connect(mongodbURL);
+	var db = mongoose.connection;
+	db.on('error', console.error.bind(console, 'connection error:'));
+	db.once('open', function (callback) {
+		var Restaurant = mongoose.model('Restaurant', restaurantSchema);
+		Restaurant.find({restaurant_id: req.params.id,grades:{$elemMatch:{date:req.params.date,grade:req.params.grade,score:req.params.score}}},function(err,results){
+       		if (err) {
+				res.status(500).json(err);
+				throw err
+			}
+			if (results.length > 0) {
+				Restaurant.update({restaurant_id: req.params.id},{$pull:{grades:{date:req.params.date,grade:req.params.grade,score:req.params.score}}},{ safe: true },function(err){
+			if (err) {
+				res.status(500).json(err);
+				throw err
+			}else{
+				res.status(200).json({message: 'delete done'});
+			}
+			
+		});
+			}
+			else {
+				res.status(200).json({message: 'No matching document'});
+			}
+			db.close();
+    	});
+		
+    });
+});
 
 app.get('/restaurant_id/:id', function(req,res) {
 	var restaurantSchema = require('./models/restaurant');
